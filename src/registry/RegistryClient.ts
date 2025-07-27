@@ -336,8 +336,10 @@ export class RegistryClient {
     ): Promise<Response> {
         const relative = Array.isArray(path) ? path.map(globalThis.encodeURIComponent).join("/") : path;
         const headers = new Headers(options?.headers);
-        if (!headers.has("User-Agent")) headers.set("User-Agent", this.userAgent);
-        if (!headers.has("Authorization") && this.token !== null) headers.set("Authorization", this.token);
+        if (!headers.has("User-Agent"))
+            headers.set("User-Agent", this.userAgent);
+        if (!headers.has("Authorization") && this.token !== null)
+            headers.set("Authorization", this.token);
 
         (options ??= {}).headers = headers;
 
