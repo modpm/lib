@@ -184,7 +184,7 @@ export class RegistryClient {
             game_versions?: string[];
             version_type?: RegistryReleaseChannel;
         } = {}
-    ): Promise<RegistryVersion[]> {
+    ): Promise<RegistryVersion[] | null> {
         const params = new URLSearchParams();
         if (filters.loaders !== undefined)
             params.append("loaders", JSON.stringify(filters.loaders));
@@ -193,7 +193,14 @@ export class RegistryClient {
         if (filters.version_type !== undefined)
             params.append("version_type", JSON.stringify(filters.version_type));
 
-        return (await this.fetch(`project/${project}/versions`, {}, params)).json();
+        try {
+            return (await (await this.fetch(["project", pkg, "version"], {}, params)).json())
+        }
+        catch (err) {
+            if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                return null;
+            throw err;
+        }
     }
 
     /**
