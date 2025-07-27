@@ -149,14 +149,14 @@ export class RegistryClient {
     }
 
     /**
-     * Retrieves the version associated with the specified project and version number or ID.
+     * Retrieves the version associated with the specified package and version number or ID.
      *
-     * @param project Project ID.
+     * @param pkg Package ID.
      * @param version Version number or ID.
      */
-    public async getVersionByNumber(project: string, version: string): Promise<RegistryVersion | null> {
+    public async getVersionByNumber(pkg: string, version: string): Promise<RegistryVersion | null> {
         try {
-            return await (await this.fetch(["project", project, "version", version])).json();
+            return await (await this.fetch(["project", pkg, "version", version])).json();
         }
         catch (err) {
             if (err instanceof RegistryClient.RegistryError && err.message === "404")
@@ -166,19 +166,19 @@ export class RegistryClient {
     }
 
     /**
-     * Retrieves the versions associated with the specified project.
+     * Retrieves the versions associated with the specified package.
      *
      * Filters:
      *  - `loaders` — restricts versions to those compatible with the specified loaders.
      *  - `game_versions` — restricts versions to those compatible with the specified game versions.
      *  - `version_type` — restricts versions to those of the specified type (release channel).
      *
-     * @param project Project ID.
+     * @param pkg Package ID.
      * @param [filters] Filters to apply.
      * @returns List of matching versions, sorted in descending order, with the latest version first.
      */
     public async listVersions(
-        project: string,
+        pkg: string,
         filters: {
             loaders?: string[];
             game_versions?: string[];
