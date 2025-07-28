@@ -3,53 +3,55 @@ import {RegistryReleaseChannel} from "./RegistryReleaseChannel.js";
 import {RegistryVersion} from "./RegistryVersion.js";
 
 /**
+ * Represents an error returned by the registry API.
+ *
+ * @final
+ */
+class RegistryError extends Error {
+    /**
+     * Error code.
+     */
+    public readonly code?: string;
+
+    /**
+     * Creates a new registry error.
+     *
+     * @param description Error description.
+     * @param [code] Error code.
+     */
+    public constructor(description: string, code?: string) {
+        super(description);
+        this.name = new.target.name;
+        this.code = code;
+    }
+
+    /**
+     * Creates a registry error from a response.
+     *
+     * @param res Response to parse.
+     */
+    public static async fromResponse(res: Response): Promise<RegistryError> {
+        if (
+            res.headers.get("Content-Type")?.startsWith("application/json")
+            && res.headers.has("Content-Length")
+        ) {
+            const text = await res.text();
+            if (text.length > 0) {
+                const json: {error: string, description: string} = JSON.parse(text);
+                return new RegistryError(json.description, json.error);
+            }
+        }
+        return new RegistryError(res.status.toString());
+    }
+}
+
+/**
  * Provides methods for interacting with the registry via its HTTP API.
  *
  * @final
  */
 export class RegistryClient {
-    /**
-     * Represents an error returned by the registry API.
-     *
-     * @final
-     */
-    static RegistryError = class RegistryError extends Error {
-        /**
-         * Error code.
-         */
-        public readonly code?: string;
-
-        /**
-         * Creates a new registry error.
-         *
-         * @param description Error description.
-         * @param [code] Error code.
-         */
-        public constructor(description: string, code?: string) {
-            super(description);
-            this.name = new.target.name;
-            this.code = code;
-        }
-
-        /**
-         * Creates a registry error from a response.
-         *
-         * @param res Response to parse.
-         */
-        public static async fromResponse(res: Response): Promise<RegistryError> {
-            if (
-                res.headers.get("Content-Type")?.startsWith("application/json")
-                && res.headers.has("Content-Length")
-            ) {
-                const text = await res.text();
-                if (text.length > 0) {
-                    const json: {error: string, description: string} = JSON.parse(text);
-                    return new RegistryError(json.description, json.error);
-                }
-            }
-            return new RegistryError(res.status.toString());
-        }
-    };
+    public static readonly RegistryError = RegistryError;
 
     /**
      * User agent string used when making requests to the registry.
