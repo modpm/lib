@@ -80,6 +80,8 @@ export class RegistryClient {
      * Retrieves the package associated with the specified ID.
      *
      * @param id Package ID.
+     * @returns `null` if the package is not found.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getPackage(id: string): Promise<RegistryPackage | null> {
         return this.fetch(["project", id])
@@ -95,6 +97,7 @@ export class RegistryClient {
      * Retrieves the packages associated with the specified IDs.
      *
      * @param ids Package IDs.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getPackages(ids: string[]): Promise<RegistryPackage[]> {
         return this.fetch("projects", {}, new URLSearchParams({
@@ -108,6 +111,8 @@ export class RegistryClient {
      * This method returns the ID even for private/draft packages, without requiring authentication.
      *
      * @param slug Package slug.
+     * @returns `null` if the package is not found.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getPackageId(slug: string): Promise<string | null> {
         return this.fetch(["project", slug, "check"])
@@ -124,6 +129,8 @@ export class RegistryClient {
      * Retrieves the version associated with the specified version ID.
      *
      * @param id Version ID.
+     * @returns `null` if the version is not found.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getVersion(id: string): Promise<RegistryVersion | null> {
         return this.fetch(["version", id])
@@ -139,6 +146,7 @@ export class RegistryClient {
      * Retrieves the versions associated with the specified version IDs.
      *
      * @param ids Version IDs.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getVersions(ids: string[]): Promise<RegistryVersion[]> {
         return this.fetch("versions", {}, new URLSearchParams({
@@ -151,6 +159,8 @@ export class RegistryClient {
      *
      * @param pkg Package ID.
      * @param version Version number or ID.
+     * @returns `null` if the package or version is not found.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getVersionByNumber(pkg: string, version: string): Promise<RegistryVersion | null> {
         return this.fetch(["project", pkg, "version", version])
@@ -173,6 +183,7 @@ export class RegistryClient {
      * @param pkg Package ID.
      * @param [filters] Filters to apply.
      * @returns List of matching versions, sorted in descending order, with the latest version first.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async listVersions(
         pkg: string,
@@ -203,6 +214,8 @@ export class RegistryClient {
      * Retrieves the version associated with the specified file hash.
      *
      * @param hash SHA-512 hash of the file, encoded as a hex string.
+     * @returns `null` if the version is not found.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getVersionByHash(hash: string): Promise<RegistryVersion | null> {
         return this.fetch(["version_file", hash], {}, new URLSearchParams({
@@ -226,6 +239,7 @@ export class RegistryClient {
      *
      * @param hashes SHA-512 hashes of the files, encoded as a hex strings.
      * @param [filters] Filters to apply.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
      */
     public async getLatestVersions(hashes: string[], filters: {
         loaders?: string[];
