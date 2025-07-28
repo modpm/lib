@@ -4,10 +4,14 @@ import {RegistryVersion} from "./RegistryVersion.js";
 
 /**
  * Provides methods for interacting with the registry via its HTTP API.
+ *
+ * @final
  */
 export class RegistryClient {
     /**
      * Represents an error returned by the registry API.
+     *
+     * @final
      */
     static RegistryError = class RegistryError extends Error {
         /**
