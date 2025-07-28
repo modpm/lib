@@ -20,6 +20,8 @@ export class RegistryClient {
         public readonly code?: string;
 
         /**
+         * Creates a new registry error.
+         *
          * @param description Error description.
          * @param [code] Error code.
          */
