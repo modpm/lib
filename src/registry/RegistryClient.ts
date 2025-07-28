@@ -25,6 +25,7 @@ export class RegistryClient {
          */
         public constructor(description: string, code?: string) {
             super(description);
+            this.name = new.target.name;
             this.code = code;
         }
 
