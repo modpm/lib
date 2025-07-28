@@ -82,14 +82,13 @@ export class RegistryClient {
      * @param id Package ID.
      */
     public async getPackage(id: string): Promise<RegistryPackage | null> {
-        try {
-            return await (await this.fetch(["project", id])).json();
-        }
-        catch (err) {
-            if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                return null;
-            throw err;
-        }
+        return this.fetch(["project", id])
+            .then(res => res.json())
+            .catch(err => {
+                if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                    return null;
+                throw err;
+            });
     }
 
     /**
@@ -98,9 +97,9 @@ export class RegistryClient {
      * @param ids Package IDs.
      */
     public async getPackages(ids: string[]): Promise<RegistryPackage[]> {
-        return (await this.fetch("projects", {}, new URLSearchParams({
+        return this.fetch("projects", {}, new URLSearchParams({
             ids: JSON.stringify(ids),
-        }))).json();
+        })).then(res => res.json());
     }
 
     /**
@@ -111,14 +110,14 @@ export class RegistryClient {
      * @param slug Package slug.
      */
     public async getPackageId(slug: string): Promise<string | null> {
-        try {
-            return (await (await this.fetch(["project", slug, "check"])).json()).id;
-        }
-        catch (err) {
-            if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                return null;
-            throw err;
-        }
+        return this.fetch(["project", slug, "check"])
+            .then(res => res.json())
+            .then(json => json.id)
+            .catch(err => {
+                if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                    return null;
+                throw err;
+            });
     }
 
     /**
@@ -127,14 +126,13 @@ export class RegistryClient {
      * @param id Version ID.
      */
     public async getVersion(id: string): Promise<RegistryVersion | null> {
-        try {
-            return await (await this.fetch(["version", id])).json();
-        }
-        catch (err) {
-            if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                return null;
-            throw err;
-        }
+        return this.fetch(["version", id])
+            .then(res => res.json())
+            .catch(err => {
+                if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                    return null;
+                throw err;
+            });
     }
 
     /**
@@ -143,9 +141,9 @@ export class RegistryClient {
      * @param ids Version IDs.
      */
     public async getVersions(ids: string[]): Promise<RegistryVersion[]> {
-        return (await this.fetch("versions", {}, new URLSearchParams({
+        return this.fetch("versions", {}, new URLSearchParams({
             ids: JSON.stringify(ids),
-        }))).json();
+        })).then(res => res.json());
     }
 
     /**
@@ -155,14 +153,13 @@ export class RegistryClient {
      * @param version Version number or ID.
      */
     public async getVersionByNumber(pkg: string, version: string): Promise<RegistryVersion | null> {
-        try {
-            return await (await this.fetch(["project", pkg, "version", version])).json();
-        }
-        catch (err) {
-            if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                return null;
-            throw err;
-        }
+        return this.fetch(["version", pkg, "version", version])
+            .then(res => res.json())
+            .catch(err => {
+                if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                    return null;
+                throw err;
+            });
     }
 
     /**
@@ -193,14 +190,13 @@ export class RegistryClient {
         if (filters.version_type !== undefined)
             params.append("version_type", JSON.stringify(filters.version_type));
 
-        try {
-            return (await (await this.fetch(["project", pkg, "version"], {}, params)).json())
-        }
-        catch (err) {
-            if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                return null;
-            throw err;
-        }
+        return this.fetch(["project", pkg, "version"], {}, params)
+            .then(res => res.json())
+            .catch(err => {
+                if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                    return null;
+                throw err;
+            });
     }
 
     /**
@@ -209,16 +205,15 @@ export class RegistryClient {
      * @param hash SHA-512 hash of the file, encoded as a hex string.
      */
     public async getVersionByHash(hash: string): Promise<RegistryVersion | null> {
-        try {
-            return await (await this.fetch(["version_file", hash], {}, new URLSearchParams({
-                algorithm: "sha512",
-            }))).json();
-        }
-        catch (err) {
-            if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                return null;
-            throw err;
-        }
+        return this.fetch(["version_file", hash], {}, new URLSearchParams({
+            algorithm: "sha512",
+        }))
+            .then(res => res.json())
+            .catch(err => {
+                if (err instanceof RegistryClient.RegistryError && err.message === "404")
+                    return null;
+                throw err;
+            });
     }
 
     /**
@@ -237,8 +232,7 @@ export class RegistryClient {
         game_versions?: string[];
         version_type?: RegistryReleaseChannel;
     } = {}): Promise<Record<string, RegistryVersion>> {
-
-        return await (await this.fetch("version_files/update", {
+        return this.fetch("version_files/update", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -250,15 +244,16 @@ export class RegistryClient {
                 game_versions: filters.game_versions,
                 version_type: filters.version_type,
             }),
-        })).json();
+        }).then(res => res.json());
     }
 
     /**
      * Retrieves all loaders supported by the registry.
      */
     public async getLoaders(): Promise<string[]> {
-        return (await (await this.fetch("tags/loaders")).json())
-            .map((l: {name: string}) => l.name);
+        return this.fetch("tags/loaders")
+            .then(res => res.json())
+            .then((json: any[]) => json.map((l: {name: string}) => l.name));
     }
 
     /**
@@ -358,18 +353,18 @@ export class RegistryClient {
         if (retry === null)
             throw await RegistryClient.RegistryError.fromResponse(res);
         if (retry === 0)
-            return await this.fetch(path, options, query, retries, --remainingRetries);
+            return this.fetch(path, options, query, retries, --remainingRetries);
         if (retry > 30)
             throw await RegistryClient.RegistryError.fromResponse(res);
         if (retry > 0) {
             await this.delay(retry * 1000);
-            return await this.fetch(path, options, query, retries, --remainingRetries);
+            return this.fetch(path, options, query, retries, --remainingRetries);
         }
 
         const exponentialBackoff = 2 ** (retries - remainingRetries);
         if (exponentialBackoff > 30)
             throw await RegistryClient.RegistryError.fromResponse(res);
         await this.delay(exponentialBackoff * 1000);
-        return await this.fetch(path, options, query, retries, --remainingRetries);
+        return this.fetch(path, options, query, retries, --remainingRetries);
     }
 }
