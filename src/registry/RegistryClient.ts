@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 import {RegistryPackage} from "./RegistryPackage.js";
 import {RegistryReleaseChannel} from "./RegistryReleaseChannel.js";
 import {RegistryVersion} from "./RegistryVersion.js";
