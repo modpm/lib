@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 /**
  * Represents the type of relationship between a package and a dependency, as declared by the package publisher.
  */
