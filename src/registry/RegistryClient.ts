@@ -153,7 +153,7 @@ export class RegistryClient {
      * @param version Version number or ID.
      */
     public async getVersionByNumber(pkg: string, version: string): Promise<RegistryVersion | null> {
-        return this.fetch(["version", pkg, "version", version])
+        return this.fetch(["project", pkg, "version", version])
             .then(res => res.json())
             .catch(err => {
                 if (err instanceof RegistryClient.RegistryError && err.message === "404")
