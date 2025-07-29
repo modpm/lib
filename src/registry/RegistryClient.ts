@@ -158,7 +158,7 @@ export class RegistryClient extends HTTPClient<RegistryError> {
      * @throws {@link !TypeError} If fetching fails.
      */
     public async getPackages(ids: string[]): Promise<RegistryPackage[]> {
-        return this.fetch("projects", {}, new URLSearchParams({
+        return this.fetch(["projects"], {}, new URLSearchParams({
             ids: JSON.stringify(ids),
         })).then(res => res.json());
     }
@@ -187,7 +187,7 @@ export class RegistryClient extends HTTPClient<RegistryError> {
      * @throws {@link !TypeError} If fetching fails.
      */
     public async getVersions(ids: string[]): Promise<RegistryVersion[]> {
-        return this.fetch("versions", {}, new URLSearchParams({
+        return this.fetch(["versions"], {}, new URLSearchParams({
             ids: JSON.stringify(ids),
         })).then(res => res.json());
     }
