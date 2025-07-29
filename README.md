@@ -1,4 +1,4 @@
-# @modpm/lib
+# libmodpm
 
 ## Licence
 
