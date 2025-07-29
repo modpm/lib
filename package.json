@@ -1,5 +1,5 @@
 {
-  "name": "@modpm/lib",
+  "name": "libmodpm",
   "version": "0.0.0-dev",
   "description": "Modrinth package manager library",
   "homepage": "https://github.com/modpm/lib",
