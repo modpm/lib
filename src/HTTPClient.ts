@@ -59,7 +59,7 @@ export abstract class HTTPClient<T extends Error> {
      */
     private static getTransientErrorRetryDelay(res: Response): number | null {
         const retryAfter = res.headers.get('Retry-After');
-        if (retryAfter) {
+        if (retryAfter != null) {
             return this.parseRelativeTime(retryAfter);
         }
 
