@@ -22,7 +22,9 @@
     "url": "https://github.com/modpm/lib/issues"
   },
   "keywords": [
-    "modrinth"
+    "modrinth",
+    "package-manager",
+    "library"
   ],
   "devDependencies": {
     "typescript": "^5.6.3"
