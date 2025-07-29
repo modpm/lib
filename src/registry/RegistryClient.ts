@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+import {HTTPClient} from "../HTTPClient.js";
 import {RegistryPackage} from "./RegistryPackage.js";
 import {RegistryReleaseChannel} from "./RegistryReleaseChannel.js";
 import {RegistryVersion} from "./RegistryVersion.js";
@@ -25,25 +26,6 @@ class RegistryError extends Error {
         this.name = new.target.name;
         this.code = code;
     }
-
-    /**
-     * Creates a registry error from a response.
-     *
-     * @param res Response to parse.
-     */
-    public static async fromResponse(res: Response): Promise<RegistryError> {
-        if (
-            res.headers.get("Content-Type")?.startsWith("application/json")
-            && res.headers.has("Content-Length")
-        ) {
-            const text = await res.text();
-            if (text.length > 0) {
-                const json: {error: string, description: string} = JSON.parse(text);
-                return new RegistryError(json.description, json.error);
-            }
-        }
-        return new RegistryError(res.status.toString());
-    }
 }
 
 /**
@@ -51,25 +33,11 @@ class RegistryError extends Error {
  *
  * @final
  */
-export class RegistryClient {
+export class RegistryClient extends HTTPClient<RegistryError> {
     public static readonly RegistryError = RegistryError;
 
     /**
-     * User agent string used when making requests to the registry.
-     *
-     * @see https://docs.modrinth.com/api/#user-agents
-     */
-    public readonly userAgent: string;
-    /**
-     * API authentication token. Requires the following scopes:
-     *  - `PROJECT_READ`
-     *  - `VERSION_READ`
-     *
-     * Authentication is only needed for accessing private/draft packages and their versions.
-     */
-    private readonly token: string | null;
-    /**
-     * API base URL. Must end with a slash.
+     * Base URL for HTTP requests.
      */
     private readonly baseUrl: URL;
 
@@ -78,12 +46,28 @@ export class RegistryClient {
      *
      * @param userAgent User agent string used when making requests to the registry.
      * @param [token] API authentication token.
-     * @param [baseUrl=new URL("https://api.modrinth.com/v2/")] API base URL. Must end with a slash.
+     * @param [baseUrl=new URL("https://api.modrinth.com/v2/")] API authentication token. Requires the following scopes:
+     *  - `PROJECT_READ`
+     *  - `VERSION_READ`
+     *
+     * Authentication is only needed for accessing private/draft packages and their versions.
      */
     public constructor(userAgent: string, token?: string, baseUrl = new URL("https://api.modrinth.com/v2/")) {
-        this.userAgent = userAgent;
-        this.token = token ?? null;
+        super(userAgent, token);
         this.baseUrl = baseUrl;
+    }
+
+    /**
+     * Catches 404 errors and returns null.
+     *
+     * @param error Error to try to catch.
+     * @returns `null` if the error is a 404 error.
+     * @throws {@link RegistryClient.RegistryError} If the error is not a 404 error.
+     */
+    public static catch404(error: Error): null {
+        if (error instanceof RegistryClient.RegistryError && error.message === "404")
+            return null;
+        throw error;
     }
 
     /**
@@ -92,27 +76,12 @@ export class RegistryClient {
      * @param id Package ID.
      * @returns `null` if the package is not found.
      * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async getPackage(id: string): Promise<RegistryPackage | null> {
         return this.fetch(["project", id])
             .then(res => res.json())
-            .catch(err => {
-                if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                    return null;
-                throw err;
-            });
-    }
-
-    /**
-     * Retrieves the packages associated with the specified IDs.
-     *
-     * @param ids Package IDs.
-     * @throws {@link RegistryClient.RegistryError} If the request fails.
-     */
-    public async getPackages(ids: string[]): Promise<RegistryPackage[]> {
-        return this.fetch("projects", {}, new URLSearchParams({
-            ids: JSON.stringify(ids),
-        })).then(res => res.json());
+            .catch(RegistryClient.catch404);
     }
 
     /**
@@ -123,16 +92,13 @@ export class RegistryClient {
      * @param slug Package slug.
      * @returns `null` if the package is not found.
      * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async getPackageId(slug: string): Promise<string | null> {
         return this.fetch(["project", slug, "check"])
             .then(res => res.json())
             .then(json => json.id)
-            .catch(err => {
-                if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                    return null;
-                throw err;
-            });
+            .catch(RegistryClient.catch404);
     }
 
     /**
@@ -141,45 +107,12 @@ export class RegistryClient {
      * @param id Version ID.
      * @returns `null` if the version is not found.
      * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async getVersion(id: string): Promise<RegistryVersion | null> {
         return this.fetch(["version", id])
             .then(res => res.json())
-            .catch(err => {
-                if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                    return null;
-                throw err;
-            });
-    }
-
-    /**
-     * Retrieves the versions associated with the specified version IDs.
-     *
-     * @param ids Version IDs.
-     * @throws {@link RegistryClient.RegistryError} If the request fails.
-     */
-    public async getVersions(ids: string[]): Promise<RegistryVersion[]> {
-        return this.fetch("versions", {}, new URLSearchParams({
-            ids: JSON.stringify(ids),
-        })).then(res => res.json());
-    }
-
-    /**
-     * Retrieves the version associated with the specified package and version number or ID.
-     *
-     * @param pkg Package ID.
-     * @param version Version number or ID.
-     * @returns `null` if the package or version is not found.
-     * @throws {@link RegistryClient.RegistryError} If the request fails.
-     */
-    public async getVersionByNumber(pkg: string, version: string): Promise<RegistryVersion | null> {
-        return this.fetch(["project", pkg, "version", version])
-            .then(res => res.json())
-            .catch(err => {
-                if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                    return null;
-                throw err;
-            });
+            .catch(RegistryClient.catch404);
     }
 
     /**
@@ -194,6 +127,7 @@ export class RegistryClient {
      * @param [filters] Filters to apply.
      * @returns List of matching versions, sorted in descending order, with the latest version first.
      * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async listVersions(
         pkg: string,
@@ -213,11 +147,20 @@ export class RegistryClient {
 
         return this.fetch(["project", pkg, "version"], {}, params)
             .then(res => res.json())
-            .catch(err => {
-                if (err instanceof RegistryClient.RegistryError && err.message === "404")
-                    return null;
-                throw err;
-            });
+            .catch(RegistryClient.catch404);
+    }
+
+    /**
+     * Retrieves the packages associated with the specified IDs.
+     *
+     * @param ids Package IDs.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
+     */
+    public async getPackages(ids: string[]): Promise<RegistryPackage[]> {
+        return this.fetch("projects", {}, new URLSearchParams({
+            ids: JSON.stringify(ids),
+        })).then(res => res.json());
     }
 
     /**
@@ -226,11 +169,40 @@ export class RegistryClient {
      * @param hash SHA-512 hash of the file, encoded as a hex string.
      * @returns `null` if the version is not found.
      * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async getVersionByHash(hash: string): Promise<RegistryVersion | null> {
         return this.fetch(["version_file", hash], {}, new URLSearchParams({
             algorithm: "sha512",
         }))
+            .then(res => res.json())
+            .catch(RegistryClient.catch404);
+    }
+
+    /**
+     * Retrieves the versions associated with the specified version IDs.
+     *
+     * @param ids Version IDs.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
+     */
+    public async getVersions(ids: string[]): Promise<RegistryVersion[]> {
+        return this.fetch("versions", {}, new URLSearchParams({
+            ids: JSON.stringify(ids),
+        })).then(res => res.json());
+    }
+
+    /**
+     * Retrieves the version associated with the specified package and version number or ID.
+     *
+     * @param pkg Package ID.
+     * @param version Version number or ID.
+     * @returns `null` if the package or version is not found.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
+     */
+    public async getVersionByNumber(pkg: string, version: string): Promise<RegistryVersion | null> {
+        return this.fetch(["project", pkg, "version", version])
             .then(res => res.json())
             .catch(err => {
                 if (err instanceof RegistryClient.RegistryError && err.message === "404")
@@ -250,6 +222,7 @@ export class RegistryClient {
      * @param hashes SHA-512 hashes of the files, encoded as a hex strings.
      * @param [filters] Filters to apply.
      * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async getLatestVersions(hashes: string[], filters: {
         loaders?: string[];
@@ -273,6 +246,9 @@ export class RegistryClient {
 
     /**
      * Retrieves all loaders supported by the registry.
+     *
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
      */
     public async getLoaders(): Promise<string[]> {
         return this.fetch("tags/loaders")
@@ -280,59 +256,15 @@ export class RegistryClient {
             .then((json: any[]) => json.map((l: {name: string}) => l.name));
     }
 
-    /**
-     * Returns a promise which is resolved after the specified number of milliseconds.
-     *
-     * @param delay Number of milliseconds to wait.
-     */
-    private delay(delay: number): Promise<void> {
-        return new Promise(resolve => globalThis.setTimeout(resolve, delay));
-    }
-
-    /**
-     * Parses a string representing either a decimal integer or an HTTP date.
-     *
-     * @param value String to parse.
-     * @returns Returns the number of seconds representing the difference relative to the current time, as represented
-     *     by the input.
-     */
-    private parseRelativeTime(value: string): number {
-        if (/^\d+$/.test(value))
-            return Number.parseInt(value, 10);
-        return Math.ceil((new Date(value).getTime() - Date.now()) / 1000);
-    }
-
-    /**
-     * Determines whether the specified response represents a transient error, and if so, how long to wait before
-     * retrying the request.
-     *
-     * @param res Response to check.
-     * @returns
-     *  - a non-negative number specifying the delay in seconds before retrying,
-     *  - `-1` to indicate the delay is unknown and that exponential backoff should be used,
-     *  - or `null` if the response is not a transient error and should not be retried.
-     */
-    private getTransientErrorRetryDelay(res: Response): number | -1 | null {
-        if (res.headers.has("Retry-After")) return this.parseRelativeTime(res.headers.get("Retry-After")!);
-        switch (res.status) {
-            case 429: {
-                const reset = res.headers.get("RateLimit-Reset")
-                    ?? res.headers.get("X-RateLimit-Reset");
-                if (reset === null) return -1;
-                return this.parseRelativeTime(reset);
-            }
-            case 503: {
-                const retryAfter = res.headers.get("Retry-After");
-                if (retryAfter === null) return -1;
-                return this.parseRelativeTime(retryAfter);
-            }
-            case 408:
-            case 504:
-            case 507:
-            case 522:
-                return -1;
+    public override async createError(res: Response): Promise<RegistryError> {
+        if (
+            (res.headers.get("Content-Type")?.startsWith("application/json") ?? false)
+            && res.body !== null
+        ) {
+            const {description, error} = await res.json() as {error: string, description: string};
+            return new RegistryError(description, error);
         }
-        return null;
+        return new RegistryError(res.status.toString());
     }
 
     /**
@@ -341,54 +273,55 @@ export class RegistryClient {
      * @param path Relative path to the API endpoint.
      * @param [options] Request options.
      * @param [query] Query parameters.
-     * @param [retries=4] Number of times to retry the request if it fails with a transient error.
-     * @param [remainingRetries=retries] Internal: number of remaining iterations.
+     * @param [retries=3] Maximum number of retry attempts performed if the request fails.
      * @throws {@link RegistryClient.RegistryError} If the request fails with a permanent error, allowed retries
      *     already exceeded, or delay is more than 30 seconds.
+     * @throws {@link !TypeError} If the request fails due to a native fetch error, like a network error, DNS error,
+     *     timeout, etc.
+     * @final
      */
-    private async fetch(
-        path: string | string[],
+    protected override async fetch(
+        path: string[],
         options?: RequestInit,
         query?: URLSearchParams,
-        retries = 4,
+        retries?: number,
+    ): Promise<Response>;
+
+    /**
+     * Sends an HTTP request.
+     *
+     * @param url Absolute URL.
+     * @param [options] Request options.
+     * @param [query] Query parameters.
+     * @param [retries=3] Maximum number of retry attempts performed if the request fails.
+     * @throws {@link RegistryClient.RegistryError} If the request fails with a permanent error, allowed retries
+     *     already exceeded, or delay is more than 30 seconds.
+     * @throws {@link !TypeError} If the request fails due to a native fetch error, like a network error, DNS error,
+     *     timeout, etc.
+     * @final
+     */
+    protected override async fetch(
+        url: URL | string,
+        options?: RequestInit,
+        query?: URLSearchParams,
+        retries?: number,
+    ): Promise<Response>;
+
+    // only adding an overload… sorry @final 😔
+    protected override async fetch(
+        url: URL | string | string[],
+        options?: RequestInit,
+        query?: URLSearchParams,
+        retries = 3,
         remainingRetries = retries,
     ): Promise<Response> {
-        const relative = Array.isArray(path) ? path.map(globalThis.encodeURIComponent).join("/") : path;
-        const headers = new Headers(options?.headers);
-        if (!headers.has("User-Agent"))
-            headers.set("User-Agent", this.userAgent);
-        if (!headers.has("Authorization") && this.token !== null)
-            headers.set("Authorization", this.token);
-
-        (options ??= {}).headers = headers;
-
-        const url = new URL(relative, this.baseUrl);
-        if (query !== undefined)
-            for (const [key, value] of query)
-                url.searchParams.append(key, value);
-        const res = await fetch(url, options);
-        if (res.ok)
-            return res;
-
-        if (retries <= 0)
-            throw await RegistryClient.RegistryError.fromResponse(res);
-
-        const retry = this.getTransientErrorRetryDelay(res);
-        if (retry === null)
-            throw await RegistryClient.RegistryError.fromResponse(res);
-        if (retry === 0)
-            return this.fetch(path, options, query, retries, --remainingRetries);
-        if (retry > 30)
-            throw await RegistryClient.RegistryError.fromResponse(res);
-        if (retry > 0) {
-            await this.delay(retry * 1000);
-            return this.fetch(path, options, query, retries, --remainingRetries);
-        }
-
-        const exponentialBackoff = 2 ** (retries - remainingRetries);
-        if (exponentialBackoff > 30)
-            throw await RegistryClient.RegistryError.fromResponse(res);
-        await this.delay(exponentialBackoff * 1000);
-        return this.fetch(path, options, query, retries, --remainingRetries);
+        if (Array.isArray(url))
+            return super.fetch(
+                new URL(url.map(globalThis.encodeURIComponent).join("/"), this.baseUrl),
+                options,
+                query,
+                remainingRetries,
+            );
+        return super.fetch(url, options, query, remainingRetries);
     }
 }
