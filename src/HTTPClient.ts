@@ -58,20 +58,19 @@ export abstract class HTTPClient<T extends Error> {
      *  - or `null` if the response is not a transient error and should not be retried.
      */
     private static getTransientErrorRetryDelay(res: Response): number | null {
-        if (res.headers.has("Retry-After")) return this.parseRelativeTime(res.headers.get("Retry-After")!);
-        switch (res.status) {
-            case 429: {
-                const reset = res.headers.get("RateLimit-Reset") ?? res.headers.get("X-RateLimit-Reset");
-                if (reset === null) return -1;
-                return this.parseRelativeTime(reset);
-            }
-            case 408:
-            case 503:
-            case 504:
-            case 507:
-            case 522:
-                return -1;
+        const retryAfter = res.headers.get('Retry-After');
+        if (retryAfter) {
+            return this.parseRelativeTime(retryAfter);
         }
+
+        if (res.status === 429) {
+            const reset = res.headers.get('RateLimit-Reset') ?? res.headers.get('X-RateLimit-Reset');
+            return reset === null ? -1 : this.parseRelativeTime(reset);
+        }
+
+        if ([408, 503, 504, 507, 522].includes(res.status))
+            return -1;
+
         return null;
     }
 

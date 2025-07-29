@@ -193,8 +193,8 @@ export class Downloader extends HTTPClient<DownloadError> {
         };
     }
 
-    protected override async createError(res: Response) {
-        return new DownloadError(`Status code: ${res.status} for ${res.url}`);
+    protected override createError(res: Response) {
+        return Promise.resolve(new DownloadError(`Status code: ${res.status} for ${res.url}`));
     }
 
     /**

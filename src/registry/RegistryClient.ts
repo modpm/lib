@@ -258,7 +258,7 @@ export class RegistryClient extends HTTPClient<RegistryError> {
 
     public override async createError(res: Response): Promise<RegistryError> {
         if (
-            res.headers.get("Content-Type")?.startsWith("application/json")
+            (res.headers.get("Content-Type")?.startsWith("application/json") ?? false)
             && res.body !== null
         ) {
             const {description, error} = await res.json() as {error: string, description: string};
