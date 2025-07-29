@@ -4,7 +4,7 @@
   "description": "Modrinth package manager library",
   "homepage": "https://github.com/modpm/lib",
   "author": "Zefir Kirilov",
-  "license": "LGPL-3.0",
+  "license": "GPL-3.0",
   "type": "module",
   "main": "dist/index.js",
   "files": [
