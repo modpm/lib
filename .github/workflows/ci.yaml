@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: package
-          path: modpm-lib-0.0.0-dev.tgz
+          path: libmodpm-0.0.0-dev.tgz
 
   publish:
     name: Publish
@@ -75,7 +75,7 @@ jobs:
 
       - name: Extract build package
         working-directory: ./package
-        run: tar -xzf modpm-lib-0.0.0-dev.tgz
+        run: tar -xzf libmodpm-0.0.0-dev.tgz
 
       - name: Set version from release tag
         run: npm version ${{ github.event.release.tag_name }} --git-tag-version=false
