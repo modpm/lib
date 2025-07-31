@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-import {RegistryPackage} from "./RegistryPackage.js";
+import {RegistrySearchPackage} from "./RegistrySearchPackage.js";
 
 export interface RegistrySearchResults {
     /**
      * List of results.
      */
-    hits: RegistryPackage[];
+    hits: RegistrySearchPackage[];
 
     /**
      * Number of results skipped.
