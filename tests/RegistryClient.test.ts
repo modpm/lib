@@ -1,6 +1,6 @@
-import {describe, it, expect} from "vitest";
+import {describe, expect, it} from "vitest";
 import {name, version} from "../package.json";
-import {RegistryClient, RegistryReleaseChannel} from "../src";
+import {RegistryClient, RegistryReleaseChannel, RegistrySearchSort} from "../src";
 
 declare const process: {
     env: {
@@ -67,6 +67,22 @@ describe("RegistryClient", () => {
         it("returns null for a non-existent package", async () => {
             const id = await client.getPackageId(randomId());
             expect(id).toBeNull();
+        });
+    });
+
+    describe("search", async () => {
+        it("searches for a specific package with facets", async () => {
+            const results = await client.search(
+                "bank",
+                [["categories:economy"], ["categories:utility"], ["categories:paper"], ["categories!=spigot"], ["versions:1.21.7", "versions:1.21.8"]],
+                RegistrySearchSort.FOLLOWS,
+                0,
+                5,
+            );
+            console.log(results);
+            expect(results.total_hits).toBeGreaterThan(0);
+            const bank = results.hits.find(pkg => pkg.project_id === "Dc8RS2En")!;
+            expect(bank).not.toBeUndefined();
         });
     });
 
