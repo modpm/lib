@@ -126,7 +126,12 @@ export class RegistryClient extends HTTPClient<RegistryError> {
         if (sort !== undefined) queryParams.set("sort", sort);
         if (offset !== undefined) queryParams.set("offset", offset.toString());
         queryParams.set("limit", limit.toString());
-        return this.fetch(["search"], {}, queryParams).then(res => res.json());
+        const body = await this.fetch(["search"], {}, queryParams).then(res => res.text());
+        return JSON.parse(body, (_, value) => {
+            if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(value))
+                return new Date(value);
+            return value;
+        });
     }
 
     /**
