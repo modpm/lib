@@ -2,6 +2,9 @@
 import {HTTPClient} from "../HTTPClient.js";
 import {RegistryPackage} from "./RegistryPackage.js";
 import {RegistryReleaseChannel} from "./RegistryReleaseChannel.js";
+import {RegistrySearchFacet} from "./RegistrySearchFacet.js";
+import {RegistrySearchResults} from "./RegistrySearchResults.js";
+import {RegistrySearchSort} from "./RegistrySearchSort.js";
 import {RegistryVersion} from "./RegistryVersion.js";
 
 /**
@@ -99,6 +102,31 @@ export class RegistryClient extends HTTPClient<RegistryError> {
             .then(res => res.json())
             .then(json => json.id)
             .catch(RegistryClient.catch404);
+    }
+
+    /**
+     * Retrieves packages matching the specified search query and facet filters.
+     *
+     * @param [query] Search query.
+     * @param [facets] Facets to filter by.
+     * @param [sort] Sort order.
+     * @param [offset] Offset into the search.
+     * @param [limit] Maximum number of results to return.
+     */
+    public async search(
+        query?: string,
+        facets?: RegistrySearchFacet[][][] | RegistrySearchFacet[][],
+        sort?: RegistrySearchSort,
+        offset?: number,
+        limit: number = 20,
+    ): Promise<RegistrySearchResults> {
+        const queryParams = new URLSearchParams();
+        if (query !== undefined) queryParams.set("query", query);
+        if (facets !== undefined) queryParams.set("facets", JSON.stringify(facets));
+        if (sort !== undefined) queryParams.set("sort", sort);
+        if (offset !== undefined) queryParams.set("offset", offset.toString());
+        queryParams.set("limit", limit.toString());
+        return this.fetch(["search"], {}, queryParams).then(res => res.json());
     }
 
     /**
