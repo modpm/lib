@@ -112,6 +112,8 @@ export class RegistryClient extends HTTPClient<RegistryError> {
      * @param [sort] Sort order.
      * @param [offset] Offset into the search.
      * @param [limit] Maximum number of results to return.
+     *
+     * @see https://docs.modrinth.com/api/operations/searchprojects/ Search projects | Modrinth Documentation
      */
     public async search(
         query?: string,
