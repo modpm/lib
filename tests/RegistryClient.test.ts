@@ -79,7 +79,6 @@ describe("RegistryClient", () => {
                 0,
                 5,
             );
-            console.log(results);
             expect(results.total_hits).toBeGreaterThan(0);
             const bank = results.hits.find(pkg => pkg.project_id === "Dc8RS2En")!;
             expect(bank).not.toBeUndefined();
