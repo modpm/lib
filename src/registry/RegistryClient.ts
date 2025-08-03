@@ -264,7 +264,7 @@ export class RegistryClient extends HTTPClient<RegistryError> {
         game_versions?: string[];
         version_type?: RegistryReleaseChannel;
     } = {}): Promise<Record<string, RegistryVersion>> {
-        return this.fetch("version_files/update", {
+        return this.fetch(["version_files", "update"], {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -286,7 +286,7 @@ export class RegistryClient extends HTTPClient<RegistryError> {
      * @throws {@link !TypeError} If fetching fails.
      */
     public async getLoaders(): Promise<string[]> {
-        return this.fetch("tags/loaders")
+        return this.fetch(["tags", "loaders"])
             .then(res => res.json())
             .then((json: any[]) => json.map((l: {name: string}) => l.name));
     }
