@@ -286,7 +286,7 @@ export class RegistryClient extends HTTPClient<RegistryError> {
      * @throws {@link !TypeError} If fetching fails.
      */
     public async getLoaders(): Promise<string[]> {
-        return this.fetch(["tags", "loaders"])
+        return this.fetch(["tag", "loaders"])
             .then(res => res.json())
             .then((json: any[]) => json.map((l: {name: string}) => l.name));
     }
