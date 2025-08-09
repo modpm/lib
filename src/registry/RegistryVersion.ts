@@ -27,6 +27,16 @@ export interface RegistryVersion {
     version_type: RegistryReleaseChannel;
 
     /**
+     * Compatible loaders.
+     */
+    loaders: string[];
+
+    /**
+     * Compatible game versions.
+     */
+    game_versions: string[];
+
+    /**
      * The dependencies of this version.
      *
      * If a dependency contains neither `version_id` nor `project_id`, it is an external unmanaged dependency.
