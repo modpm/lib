@@ -9,6 +9,11 @@ export interface RegistryPackage {
     id: string;
 
     /**
+     * Name of the package.
+     */
+    title: string;
+
+    /**
      * Description of the package.
      */
     description: string;
