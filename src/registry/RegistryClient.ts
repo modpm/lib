@@ -215,6 +215,26 @@ export class RegistryClient extends HTTPClient<RegistryError> {
     }
 
     /**
+     * Retrieves the versions associated with the specified hashes.
+     *
+     * @param hashes SHA-512 hashes of the files, encoded as a hex strings.
+     * @throws {@link RegistryClient.RegistryError} If the request fails.
+     * @throws {@link !TypeError} If fetching fails.
+     */
+    public async getVersionsByHashes(hashes: string[]): Promise<RegistryVersion[]> {
+        return this.fetch(["version_files"], {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                hashes,
+                algorithm: "sha512",
+            }),
+        }).then(res => res.json());
+    }
+
+    /**
      * Retrieves the versions associated with the specified version IDs.
      *
      * @param ids Version IDs.
