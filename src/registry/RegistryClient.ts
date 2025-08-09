@@ -231,7 +231,8 @@ export class RegistryClient extends HTTPClient<RegistryError> {
                 hashes,
                 algorithm: "sha512",
             }),
-        }).then(res => res.json());
+        }).then(res => res.json())
+            .then((json: Record<string, RegistryVersion>) => Object.values(json));
     }
 
     /**
