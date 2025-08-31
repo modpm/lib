@@ -7,5 +7,6 @@
 	"license": "GPL-3.0-only",
 	"name": "libmodpm",
 	"sourcePaths": ["src"],
-	"targetType": "library"
+	"targetType": "library",
+	"targetName": "modpm"
 }
