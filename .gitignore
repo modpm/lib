@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/libmodpm
+libmodpm.so
+libmodpm.dylib
+libmodpm.dll
+libmodpm.a
+libmodpm.lib
+libmodpm-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
