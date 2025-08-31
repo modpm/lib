@@ -3,11 +3,13 @@ docs.json
 __dummy.html
 docs/
 /libmodpm
-libmodpm.so
-libmodpm.dylib
-libmodpm.dll
-libmodpm.a
-libmodpm.lib
+liblibmodpm.so
+liblibmodpm.dylib
+liblibmodpm.dll
+liblibmodpm.a
+liblibmodpm.lib
+liblibmodpm-test-*
+# directory name might be taken from dub.json#name
 libmodpm-test-*
 *.exe
 *.pdb
