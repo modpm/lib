@@ -1,7 +1,6 @@
 module libmodpm.registry;
 
 public import libmodpm.registry.Dependency;
-public import libmodpm.registry.DependencyType;
 public import libmodpm.registry.Package;
 public import libmodpm.registry.ReleaseChannel;
 public import libmodpm.registry.Version;
