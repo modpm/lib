@@ -4,7 +4,6 @@ import std.algorithm.searching : find;
 
 import libmodpm.registry.ReleaseChannel;
 import libmodpm.registry.Dependency;
-import libmodpm.registry.VersionFile;
 
 /**
  * Represents a specific version of a package that can be installed.
@@ -48,7 +47,7 @@ public final class Version {
     /**
      * Files associated with this version.
      */
-    public const VersionFile[] files;
+    public const File[] files;
 
     /**
      * Constructs a Version instance.
@@ -64,7 +63,7 @@ public final class Version {
      *   files = Files associated with this version.
      */
     public this(string id, string packageId, string versionNumber, ReleaseChannel releaseChannel,
-        string[] loaders, string[] gameVersions, Dependency[] dependencies, VersionFile[] files) {
+        string[] loaders, string[] gameVersions, Dependency[] dependencies, File[] files) {
         this.id = id;
         this.packageId = packageId;
         this.versionNumber = versionNumber;
@@ -79,11 +78,59 @@ public final class Version {
      * Gets the primary file of this version.
      */
     public auto getPrimaryFile() {
-        const VersionFile[] result = files.find!(f => f.primary);
+        const File[] result = files.find!(f => f.primary);
 
         if (result.length == 0)
             throw new Exception("No primary file found for version " ~ id);
 
         return result[0];
+    }
+    
+    /** 
+     * Represents a downloadable file associated with a specific version of a package.
+     */
+    public final class File {
+        /**
+         * SHA-512 hash of the file.
+         */
+        public const ubyte[64] hash;
+    
+        /**
+         * Direct download URL.
+         */
+        public const string url;
+    
+        /**
+         * Name of the file.
+         */
+        public const string name;
+    
+        /**
+         * Whether this is the primary file of the version.
+         */
+        public const bool primary;
+    
+        /**
+         * Size of the file in bytes.
+         */
+        public const size_t size;
+    
+        /**
+         * Constructs a VersionFile instance.
+         *
+         * Params:
+         *   hash = SHA-512 hash of the file.
+         *   url = Direct download URL.
+         *   name = Name of the file.
+         *   primary = Whether this is the primary file of the version.
+         *   size = Size of the file in bytes.
+         */
+        public this(ubyte[64] hash, string url, string name, bool primary, size_t size) {
+            this.hash = hash;
+            this.url = url;
+            this.name = name;
+            this.primary = primary;
+            this.size = size;
+        }
     }
 }
