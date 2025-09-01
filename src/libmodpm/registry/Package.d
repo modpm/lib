@@ -5,17 +5,17 @@ module libmodpm.registry.Package;
  */
 public class Package {
     /**
-     * Unique ID of project.
+     * Unique ID of package.
      */
     public const string id;
 
     /**
-     * Name of project.
+     * Name of package.
      */
     public const string name;
 
     /**
-     * Description of project.
+     * Description of package.
      */
     public const string description;
 
@@ -23,9 +23,9 @@ public class Package {
      * Creates a new Package instance.
      *
      * Params:
-     *   id = Unique ID of project.
-     *   name = Name of project.
-     *   description = Description of project.
+     *   id = Unique ID of package.
+     *   name = Name of package.
+     *   description = Description of package.
      */
     public this(string id, string name, string description) {
         this.id = id;

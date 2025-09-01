@@ -13,9 +13,9 @@ public final class VersionedPackage : Package {
      * Creates a new VersionedPackage instance.
      *
      * Params:
-     *   id = Unique ID of project.
-     *   name = Name of project.
-     *   description = Description of project.
+     *   id = Unique ID of package.
+     *   name = Name of package.
+     *   description = Description of package.
      *   version = Specific version of the package.
      */
     public this(string id, string name, string description, Version ver) {
