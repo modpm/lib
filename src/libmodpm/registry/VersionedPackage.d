@@ -3,7 +3,7 @@ module libmodpm.registry.VersionedPackage;
 import libmodpm.registry.Package;
 import libmodpm.registry.Version;
 
-public final class VersionedPackage : Package {
+public class VersionedPackage : Package {
     /**
      * Specific version of the package.
      */
