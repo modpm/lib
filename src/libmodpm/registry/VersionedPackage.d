@@ -14,12 +14,13 @@ public final class VersionedPackage : Package {
      *
      * Params:
      *   id = Unique ID of package.
+     *   slug = Slug of package.
      *   name = Name of package.
      *   description = Description of package.
      *   version = Specific version of the package.
      */
-    public this(string id, string name, string description, Version ver) {
-        super(id, name, description);
+    public this(string id, string slug, string name, string description, Version ver) {
+        super(id, slug, name, description);
         this.ver = ver;
     }
 }
