@@ -1,7 +1,7 @@
 module libmodpm.inventory.InstalledPackage;
 
-import libmodpm.registry.VersionedPackage;
 import libmodpm.registry.Version;
+import libmodpm.registry.VersionedPackage;
 
 /**
  * Represents an installed package.

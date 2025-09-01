@@ -1,9 +1,9 @@
 module libmodpm.registry.Version;
 
-import std.algorithm.searching : find;
+import std.algorithm.searching;
 
-import libmodpm.registry.ReleaseChannel;
 import libmodpm.registry.Dependency;
+import libmodpm.registry.ReleaseChannel;
 
 /**
  * Represents a specific version of a package that can be installed.
