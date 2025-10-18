@@ -9,6 +9,11 @@ import libmodpm.registry.Package;
  */
 public class SearchPackage : Package {
     /**
+     * Description of package.
+     */
+    public const string description;
+
+    /**
      * Author of package.
      */
     public const string author;
@@ -37,7 +42,7 @@ public class SearchPackage : Package {
      * SPDX licence identifier.
      */
     public const string license;
-    
+
     /**
      * Creates a new SearchPackage instance.
      * Params:
@@ -52,10 +57,10 @@ public class SearchPackage : Package {
      *   lastUpdated = Date of last update.
      *   license = SPDX licence identifier.
      */
-    public this(string id, string slug, string name, string description,
-                string author, string[] categories, uint downloads, uint follows,
-                DateTime lastUpdated, string license) {
-        super(id, slug, name, description);
+    public this(string id, string slug, string name, string description, string author, string[] categories,
+                uint downloads, uint follows, DateTime lastUpdated, string license) {
+        super(id, slug, name);
+        this.description = description;
         this.author = author;
         this.categories = categories;
         this.downloads = downloads;

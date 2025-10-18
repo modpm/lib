@@ -16,11 +16,10 @@ public class VersionedPackage : Package {
      *   id = Unique ID of package.
      *   slug = Slug of package.
      *   name = Name of package.
-     *   description = Description of package.
      *   version = Specific version of the package.
      */
-    public this(string id, string slug, string name, string description, Version ver) {
-        super(id, slug, name, description);
+    public this(string id, string slug, string name, Version ver) {
+        super(id, slug, name);
         this.ver = ver;
     }
 }
