@@ -4,7 +4,7 @@ module libmodpm.inventory.Config;
  * Represents the package manager configuration for a given scope.
  */
 public final class Config {
-    /** 
+    /**
      * Represents the possible types of packages that can be managed.
      */
     public static enum Type {
@@ -19,8 +19,8 @@ public final class Config {
         /// Represents packages used on vanilla worlds and servers used to configure game features.
         DATA_PACK = "datapack",
     }
-    
-    /** 
+
+    /**
      * Represents the environment side of a managed scope.
      */
     public static enum Environment {
@@ -29,8 +29,8 @@ public final class Config {
         /// Represents a server-side environment.
         SERVER = "server",
     }
-    
-    /** 
+
+    /**
      * Represents a loader for packages.
      */
     public static enum Loader {
@@ -63,28 +63,28 @@ public final class Config {
         VELOCITY = "velocity",
         WATERFALL = "waterfall",
     }
-    
-    /** 
+
+    /**
      * Represents the supported loaders and environments for a package type. The type depends on context.
      */
     public static final class TypeCompatibility {
-        /** 
+        /**
          * Supported loaders.
          */
         public Loader[] loaders;
-        
-        /** 
+
+        /**
          * Supported environments.
          */
         public Environment[] environments;
-        
+
         private this(immutable Loader[] loaders, immutable Environment[] environments) immutable {
             this.loaders = loaders;
             this.environments = environments;
         }
     }
-    
-    /** 
+
+    /**
      * Map from package type to its supported loaders and environments.
      */
     public static immutable TypeCompatibility[Type] TYPE_COMPATIBILITY = [
@@ -127,23 +127,23 @@ public final class Config {
             Loader.DATAPACK,
         ], [Environment.SERVER])
     ];
-    
-    /** 
+
+    /**
      * Type of packages managed in this scope.
      */
     public immutable Type type;
-    
-    /** 
+
+    /**
      * Type of environment of this scope.
      */
     public immutable Environment environment;
-    
-    /** 
+
+    /**
      * Package loader used in this scope.
      */
     public immutable Loader loader;
-    
-    /** 
+
+    /**
      * Constructs a Config instance.
      *
      * Params:
