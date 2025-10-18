@@ -32,7 +32,7 @@ public final class Dependency {
      * Represents the relationship type between the dependent package and the dependency.
      */
     public static final enum Type {
-            /**
+        /**
          * The package declares that the dependency is mandatory.
          */
         REQUIRED = "required",
