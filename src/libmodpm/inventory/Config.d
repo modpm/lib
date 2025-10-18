@@ -144,16 +144,24 @@ public final class Config {
     public immutable Loader loader;
 
     /**
+     * Game version supported by the loader in this scope.
+     */
+    public immutable string gameVersion;
+
+    /**
      * Constructs a Config instance.
      *
      * Params:
      *   type = Type of packages managed in this scope.
      *   environment = Type of environment of this scope.
      *   loader = Package loader used in this scope.
+     *   gameVersion = Game version supported by the loader in this scope.
      */
-    public this(immutable Type type, immutable Environment environment, immutable Loader loader) immutable {
+    public this(immutable Type type, immutable Environment environment, immutable Loader loader,
+                immutable string gameVersion) immutable {
         this.type = type;
         this.environment = environment;
         this.loader = loader;
+        this.gameVersion = gameVersion;
     }
 }
