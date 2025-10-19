@@ -1,9 +1,17 @@
 module libmodpm.inventory.Config;
 
+import std.json;
+
 /**
  * Represents the package manager configuration for a given scope.
  */
 public final class Config {
+
+    /** 
+     * Configuration schema version.
+     */
+    public static const enum CONFIG_VERSION = 0;
+
     /**
      * Represents the possible types of packages that can be managed.
      */
@@ -163,5 +171,45 @@ public final class Config {
         this.environment = environment;
         this.loader = loader;
         this.gameVersion = gameVersion;
+    }
+
+    /**
+     * Serialises this config into a JSON string.
+     *
+     * Params:
+     *   pretty = Whether to format in a human-readable way.
+     */
+    public string toJSON(bool pretty = false) immutable {
+        JSONValue j = ["configVersion": CONFIG_VERSION];
+        j.object["type"] = JSONValue(type);
+        j.object["environment"] = JSONValue(environment);
+        j.object["loader"] = JSONValue(loader);
+        j.object["gameVersion"] = JSONValue(gameVersion);
+
+        return j.toJSON(pretty);
+    }
+
+    /**
+     * Deserialises a JSON string into a Config instance.
+     *
+     * Params:
+     *   json = JSON string to deserialise.
+     * Throws:
+     *   Exception = If the config version is incompatible.
+     *   JSONException = If the JSON is invalid.
+     */
+    public static immutable(Config) fromJSON(string json) {
+        JSONValue j = json.parseJSON();
+
+        if (j["configVersion"].integer() != CONFIG_VERSION)
+            throw new Exception("Incompatible config version " ~ j["configVersion"].integer().stringof ~ ". "
+                ~ "This version of libmodpm only recognizes version " ~ CONFIG_VERSION ~ ".");
+
+        return new immutable(Config)(
+            cast(Type) j["type"].str(),
+            cast(Environment) j["environment"].str(),
+            cast(Loader) j["loader"].str(),
+            j["gameVersion"].str()
+        );
     }
 }
