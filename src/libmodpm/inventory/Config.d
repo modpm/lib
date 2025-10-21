@@ -155,6 +155,12 @@ public final class Config {
      * Game version supported by the loader in this scope.
      */
     public immutable string gameVersion;
+    
+    /** 
+     * Path to the directory in which packages will be installed. The path must be on the same filesystem as the modpm
+     * scope. If the path is relative, it is resolved from the modpm scope path.
+     */
+    public immutable string path;
 
     /**
      * Constructs a Config instance.
@@ -166,11 +172,12 @@ public final class Config {
      *   gameVersion = Game version supported by the loader in this scope.
      */
     public this(immutable Type type, immutable Environment environment, immutable Loader loader,
-                immutable string gameVersion) immutable {
+                immutable string gameVersion, immutable string path) immutable {
         this.type = type;
         this.environment = environment;
         this.loader = loader;
         this.gameVersion = gameVersion;
+        this.path = path;
     }
 
     /**
@@ -185,6 +192,7 @@ public final class Config {
         j.object["environment"] = JSONValue(environment);
         j.object["loader"] = JSONValue(loader);
         j.object["gameVersion"] = JSONValue(gameVersion);
+        j.object["path"] = JSONValue(path);
 
         return j.toJSON(pretty);
     }
@@ -209,7 +217,8 @@ public final class Config {
             cast(Type) j["type"].str(),
             cast(Environment) j["environment"].str(),
             cast(Loader) j["loader"].str(),
-            j["gameVersion"].str()
+            j["gameVersion"].str(),
+            j["path"].str(),
         );
     }
 }
