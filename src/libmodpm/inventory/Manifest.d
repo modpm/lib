@@ -9,5 +9,5 @@ public final class Manifest {
     /**
      * Installed packages.
      */
-     public static InstalledPackage[] packages;
+     public immutable InstalledPackage[] packages;
 }
