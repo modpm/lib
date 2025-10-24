@@ -25,21 +25,6 @@ public final class Version {
     public const string versionNumber;
 
     /**
-     * Release channel of this version.
-     */
-    public const ReleaseChannel releaseChannel;
-
-    /**
-     * Loaders compatible with this version.
-     */
-    public const string[] loaders;
-
-    /**
-     * Game versions compatible with this version.
-     */
-    public const string[] gameVersions;
-
-    /**
      * Dependencies required by this version.
      */
     public const Dependency[] dependencies;
@@ -56,20 +41,13 @@ public final class Version {
      *   id = Unique ID of version.
      *   packageId = ID of package this version belongs to.
      *   versionNumber = Version number (e.g., "1.0.0").
-     *   releaseChannel = Release channel of this version.
-     *   loaders = Loaders compatible with this version.
-     *   gameVersions = Game versions compatible with this version.
      *   dependencies = Dependencies required by this version.
      *   files = Files associated with this version.
      */
-    public this(string id, string packageId, string versionNumber, ReleaseChannel releaseChannel,
-        string[] loaders, string[] gameVersions, Dependency[] dependencies, File[] files) {
+    public this(string id, string packageId, string versionNumber, Dependency[] dependencies, File[] files) {
         this.id = id;
         this.packageId = packageId;
         this.versionNumber = versionNumber;
-        this.releaseChannel = releaseChannel;
-        this.loaders = loaders;
-        this.gameVersions = gameVersions;
         this.dependencies = dependencies;
         this.files = files;
     }
