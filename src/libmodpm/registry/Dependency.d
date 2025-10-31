@@ -10,7 +10,7 @@ public class Dependency {
     public const string packageId;
 
     /**
-     * Type of dependency.
+     * Type of the dependency.
      */
     public const Type type;
 
@@ -18,7 +18,7 @@ public class Dependency {
      * Creates a new Dependency instance.
      *
      * Params:
-     *   type = Type of dependency.
+     *   type = Type of the dependency.
      *   packageId = ID of the dependency package.
      */
     public this(Type type, string packageId) {

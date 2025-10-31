@@ -10,12 +10,12 @@ import libmodpm.registry.ReleaseChannel;
  */
 public final class Version {
     /**
-     * Unique ID of version.
+     * Unique ID of the version.
      */
     public const string id;
 
     /**
-     * ID of package this version belongs to.
+     * ID of the package this version belongs to.
      */
     public const string packageId;
 
@@ -38,8 +38,8 @@ public final class Version {
      * Constructs a Version instance.
      *
      * Params:
-     *   id = Unique ID of version.
-     *   packageId = ID of package this version belongs to.
+     *   id = Unique ID of the version.
+     *   packageId = ID of the package this version belongs to.
      *   versionNumber = Version number (e.g., "1.0.0").
      *   dependencies = Dependencies required by this version.
      *   file = Primary file associated with this version.

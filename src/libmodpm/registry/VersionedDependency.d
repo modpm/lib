@@ -15,7 +15,7 @@ public class VersionedDependency : Dependency {
      * Creates a new VersionDependency instance.
      *
      * Params:
-     *   type = Type of dependency.
+     *   type = Type of the dependency.
      *   packageId = ID of the dependency package.
      *   versionId = ID of the dependency version.
      */

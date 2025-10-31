@@ -14,19 +14,19 @@ public final class InstalledPackage : VersionedPackage {
         /**
          * Package was explicitly requested by the user and can only be removed by the user.
          */
-        USER = 0,
+        USER = "user",
         /**
          * Package was installed as a dependency and can be automatically removed when orphaned.
          */
-        DEPENDENCY = 1,
+        DEPENDENCY = "dependency",
     }
 
     /**
      * Path where the package is installed.
      */
     public const string path;
-    
-    /** 
+
+    /**
      * Reason why this package was installed.
      */
     public InstallationReason reason;
@@ -40,9 +40,9 @@ public final class InstalledPackage : VersionedPackage {
      * Creates a new InstalledPackage instance.
      *
      * Params:
-     *   id = Unique ID of package.
-     *   slug = Slug of package.
-     *   name = Name of package.
+     *   id = Unique ID of the package.
+     *   slug = Slug of the package.
+     *   name = Name of the package.
      *   version = Specific version of the package.
      *   path = Path where the package is installed.
      *   reason = Reason why this package was installed.
