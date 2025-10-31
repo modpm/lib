@@ -6,7 +6,6 @@ import std.json;
  * Represents the package manager configuration for a given scope.
  */
 public final class Config {
-
     /** 
      * Configuration schema version.
      */
@@ -195,7 +194,7 @@ public final class Config {
     }
 
     /**
-     * Deserialises a JSON string into a Config instance.
+     * Deserialises a JSON string into a `Config` instance.
      *
      * Params:
      *   json = JSON string to deserialise.
