@@ -1,15 +1,13 @@
 module libmodpm.registry.Dependency;
 
-import libmodpm.registry.Package;
-
-/** 
+/**
  * Represents a dependency of a specific package version.
  */
-public final class Dependency {
+public class Dependency {
     /**
-     * Dependency package. If `VersionedPackage` is provided, the specific version is required.
+     * ID of the dependency package.
      */
-    public const Package pkg;
+    public const string packageId;
 
     /**
      * Type of dependency.
@@ -20,15 +18,15 @@ public final class Dependency {
      * Creates a new Dependency instance.
      *
      * Params:
-     *   pkg = Dependency package. If `VersionedPackage` is provided, the specific version is required.
      *   type = Type of dependency.
+     *   packageId = ID of the dependency package.
      */
-    public this(Package pkg, Type type) {
-        this.pkg = pkg;
+    public this(Type type, string packageId) {
+        this.packageId = packageId;
         this.type = type;
     }
-    
-    /** 
+
+    /**
      * Represents the relationship type between the dependent package and the dependency.
      */
     public static final enum Type {
@@ -36,17 +34,17 @@ public final class Dependency {
          * The package declares that the dependency is mandatory.
          */
         REQUIRED = "required",
-    
+
         /**
          * The package declares that the dependency is not required, but it may interact with it if present.
          */
         OPTIONAL = "optional",
-    
+
         /**
          * The package declares that the dependency is included within the package.
          */
         EMBEDDED = "embedded",
-    
+
         /**
          * The package declares that the dependency is not allowed to be present.
          */
