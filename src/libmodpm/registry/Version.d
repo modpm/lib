@@ -30,9 +30,9 @@ public final class Version {
     public const Dependency[] dependencies;
 
     /**
-     * Files associated with this version.
+     * Primary files associated with this version.
      */
-    public const File[] files;
+    public const File file;
 
     /**
      * Constructs a Version instance.
@@ -42,26 +42,14 @@ public final class Version {
      *   packageId = ID of package this version belongs to.
      *   versionNumber = Version number (e.g., "1.0.0").
      *   dependencies = Dependencies required by this version.
-     *   files = Files associated with this version.
+     *   file = Primary file associated with this version.
      */
-    public this(string id, string packageId, string versionNumber, Dependency[] dependencies, File[] files) {
+    public this(string id, string packageId, string versionNumber, Dependency[] dependencies, File file) {
         this.id = id;
         this.packageId = packageId;
         this.versionNumber = versionNumber;
         this.dependencies = dependencies;
-        this.files = files;
-    }
-
-    /**
-     * Gets the primary file of this version.
-     */
-    public auto getPrimaryFile() {
-        const File[] result = files.find!(f => f.primary);
-
-        if (result.length == 0)
-            throw new Exception("No primary file found for version " ~ id);
-
-        return result[0];
+        this.file = file;
     }
     
     /** 
@@ -84,11 +72,6 @@ public final class Version {
         public const string name;
     
         /**
-         * Whether this is the primary file of the version.
-         */
-        public const bool primary;
-    
-        /**
          * Size of the file in bytes.
          */
         public const size_t size;
@@ -100,14 +83,12 @@ public final class Version {
          *   hash = SHA-512 hash of the file.
          *   url = Direct download URL.
          *   name = Name of the file.
-         *   primary = Whether this is the primary file of the version.
          *   size = Size of the file in bytes.
          */
-        public this(ubyte[64] hash, string url, string name, bool primary, size_t size) {
+        public this(ubyte[64] hash, string url, string name, size_t size) {
             this.hash = hash;
             this.url = url;
             this.name = name;
-            this.primary = primary;
             this.size = size;
         }
     }
