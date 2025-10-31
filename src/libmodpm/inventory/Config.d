@@ -182,11 +182,8 @@ public final class Config {
 
     /**
      * Serialises this config into a JSON string.
-     *
-     * Params:
-     *   pretty = Whether to format in a human-readable way.
      */
-    public string toJSON(bool pretty = false) immutable {
+    public string toJSON() immutable {
         JSONValue j = ["configVersion": CONFIG_VERSION];
         j.object["type"] = JSONValue(type);
         j.object["environment"] = JSONValue(environment);
@@ -194,7 +191,7 @@ public final class Config {
         j.object["gameVersion"] = JSONValue(gameVersion);
         j.object["path"] = JSONValue(path);
 
-        return j.toJSON(pretty);
+        return j.toJSON(pretty: true);
     }
 
     /**
