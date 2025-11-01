@@ -2,11 +2,13 @@ module libmodpm.inventory.Config;
 
 import std.json;
 
+import libmodpm.registry.ReleaseChannel;
+
 /**
  * Represents the package manager configuration for a given scope.
  */
 public final class Config {
-    /** 
+    /**
      * Configuration schema version.
      */
     public static const enum CONFIG_VERSION = 0;
@@ -154,8 +156,13 @@ public final class Config {
      * Game version supported by the loader in this scope.
      */
     public immutable string gameVersion;
-    
-    /** 
+
+    /**
+     * Release channel specifying the minimum stability of versions chosen automatically in this scope.
+     */
+    public immutable ReleaseChannel minimumReleaseChannel;
+
+    /**
      * Path to the directory in which packages will be installed. The path must be on the same filesystem as the modpm
      * scope. If the path is relative, it is resolved from the modpm scope path.
      */
@@ -169,13 +176,19 @@ public final class Config {
      *   environment = Type of environment of this scope.
      *   loader = Package loader used in this scope.
      *   gameVersion = Game version supported by the loader in this scope.
+     *   minimumReleaseChannel = Release channel specifying the minimum stability of versions chosen automatically in
+     *                           this scope.
+     *   path = Path to the directory in which packages will be installed.
      */
-    public this(immutable Type type, immutable Environment environment, immutable Loader loader,
-                immutable string gameVersion, immutable string path) immutable {
+    public this(
+        immutable Type type, immutable Environment environment, immutable Loader loader, immutable string gameVersion,
+        immutable ReleaseChannel minimumReleaseChannel, immutable string path
+    ) immutable {
         this.type = type;
         this.environment = environment;
         this.loader = loader;
         this.gameVersion = gameVersion;
+        this.minimumReleaseChannel = minimumReleaseChannel;
         this.path = path;
     }
 
@@ -188,6 +201,18 @@ public final class Config {
         j.object["environment"] = JSONValue(environment);
         j.object["loader"] = JSONValue(loader);
         j.object["gameVersion"] = JSONValue(gameVersion);
+
+        final switch (minimumReleaseChannel) {
+            case ReleaseChannel.RELEASE:
+                j.object["releaseChannel"] = JSONValue("release");
+                break;
+            case ReleaseChannel.BETA:
+                j.object["releaseChannel"] = JSONValue("beta");
+                break;
+            case ReleaseChannel.ALPHA:
+                j.object["releaseChannel"] = JSONValue("alpha");
+                break;
+        }
         j.object["path"] = JSONValue(path);
 
         return j.toJSON(pretty: true);
@@ -209,11 +234,28 @@ public final class Config {
             throw new Exception("Incompatible config version " ~ j["configVersion"].integer().stringof ~ ". "
                 ~ "This version of libmodpm only recognizes version " ~ CONFIG_VERSION ~ ".");
 
+        string releaseChannel = j["releaseChannel"].str();
+        ReleaseChannel rc;
+
+        switch (releaseChannel) {
+            case "release":
+                rc = ReleaseChannel.RELEASE;
+                break;
+            case "beta":
+                rc = ReleaseChannel.BETA;
+                break;
+            case "alpha":
+                rc = ReleaseChannel.ALPHA;
+                break;
+            default: assert(0);
+        }
+
         return new immutable(Config)(
             cast(Type) j["type"].str(),
             cast(Environment) j["environment"].str(),
             cast(Loader) j["loader"].str(),
             j["gameVersion"].str(),
+            rc,
             j["path"].str(),
         );
     }
