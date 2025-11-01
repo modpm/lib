@@ -7,15 +7,15 @@ public final enum ReleaseChannel {
     /**
      * Stable release channel.
      */
-    RELEASE = "release",
+    RELEASE,
 
     /**
      * Beta release channel.
      */
-    BETA = "beta",
+    BETA,
 
     /**
      * Alpha release channel.
      */
-    ALPHA = "alpha",
+    ALPHA,
 }

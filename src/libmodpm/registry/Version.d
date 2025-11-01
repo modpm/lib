@@ -3,7 +3,6 @@ module libmodpm.registry.Version;
 import std.algorithm.searching;
 
 import libmodpm.registry.Dependency;
-import libmodpm.registry.ReleaseChannel;
 
 /**
  * Represents a specific version of a package that can be installed.
@@ -51,8 +50,8 @@ public final class Version {
         this.dependencies = dependencies;
         this.file = file;
     }
-    
-    /** 
+
+    /**
      * Represents a downloadable file associated with a specific version of a package.
      */
     public static final class File {
@@ -60,22 +59,22 @@ public final class Version {
          * SHA-512 hash of the file.
          */
         public const ubyte[64] hash;
-    
+
         /**
          * Direct download URL.
          */
         public const string url;
-    
+
         /**
          * Name of the file.
          */
         public const string name;
-    
+
         /**
          * Size of the file in bytes.
          */
         public const size_t size;
-    
+
         /**
          * Constructs a VersionFile instance.
          *
