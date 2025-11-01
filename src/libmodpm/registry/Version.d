@@ -55,7 +55,7 @@ public final class Version {
     /** 
      * Represents a downloadable file associated with a specific version of a package.
      */
-    public final class File {
+    public static final class File {
         /**
          * SHA-512 hash of the file.
          */
