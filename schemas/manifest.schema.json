@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft-06/schema#",
+  "title": "Modpm Manifest",
+  "description": "Represents the manifest of installed packages in a given scope.",
+  "type": "object",
+  "properties": {
+    "manifestVersion": {
+      "const": 0,
+      "description": "Manifest schema version."
+    },
+    "packages": {
+      "type": "array",
+      "description": "Installed packages.",
+      "items": {
+        "$ref": "#/definitions/InstalledPackage"
+      }
+    }
+  },
+  "required": ["manifestVersion", "packages"],
+  "additionalProperties": false,
+  "definitions": {
+    "Dependency": {
+      "type": "object",
+      "description": "Represents a dependency of a specific package version. If version is specified, the dependency is on that specific version of the package only.",
+      "properties": {
+        "type": {
+          "enum": ["required", "optional", "embedded", "incompatible"],
+          "description": "Type of the dependency."
+        },
+        "package": {
+          "type": "string",
+          "description": "ID of the dependency package."
+        },
+        "version": {
+          "type": "string",
+          "description": "ID of the dependency version."
+        }
+      },
+      "required": ["type", "package"],
+      "additionalProperties": false
+    },
+    "File": {
+      "type": "object",
+      "description": "Represents a downloadable file associated with a specific version of a package.",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "pattern": "^[\\da-f]{128}$",
+          "description": "SHA-512 hash of the file."
+        },
+        "url": {
+          "type": "string",
+          "description": "Direct download URL."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the file."
+        },
+        "size": {
+          "type": "number",
+          "description": "Size of the file in bytes."
+        }
+      },
+      "required": ["hash", "url", "name", "size"],
+      "additionalProperties": false
+    },
+    "Version": {
+      "type": "object",
+      "description": "Represents a specific version of a package that can be installed.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique ID of the version."
+        },
+        "number": {
+          "type": "string",
+          "description": "Version number.",
+          "examples": ["1.0.0"]
+        },
+        "dependencies": {
+          "type": "array",
+          "description": "Dependencies required by this version.",
+          "items": {
+            "$ref": "#/definitions/Dependency"
+          }
+        },
+        "file": {
+          "$ref": "#/definitions/File"
+        }
+      },
+      "required": ["id", "number", "dependencies", "file"],
+      "additionalProperties": false
+    },
+    "InstalledPackage": {
+      "type": "object",
+      "description": "Represents an installed package.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique ID of the package."
+        },
+        "slug": {
+          "type": "string",
+          "description": "Slug of the package."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the package."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path where the package is installed."
+        },
+        "reason": {
+          "enum": ["user", "dependency"],
+          "description": "Reason why this package was installed."
+        },
+        "version": {
+          "$ref": "#/definitions/Version"
+        }
+      },
+      "required": ["id", "slug", "name", "path", "reason", "version"],
+      "additionalProperties": false
+    }
+  }
+}

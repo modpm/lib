@@ -1,8 +1,9 @@
 {
 	"authors": [
-		"Kai"
+		"Kai",
+		"Zefir Kirilov"
 	],
-	"copyright": "Copyright © 2025, Kai",
+	"copyright": "Copyright © 2025 Kai, Zefir Kirilov",
 	"description": "Modpm client-side library",
 	"license": "GPL-3.0-only",
 	"name": "libmodpm",

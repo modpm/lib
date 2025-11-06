@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft-06/schema#",
+  "title": "Modpm Config",
+  "description": "Represents the package manager configuration for a given scope.",
+  "type": "object",
+  "properties": {
+    "configVersion": {
+      "const": 0,
+      "description": "Configuration schema version."
+    },
+    "type": {
+      "enum": ["mod", "plugin", "resourcepack", "shader", "datapack"],
+      "description": "Type of packages managed in this scope."
+    },
+    "environment": {
+      "enum": ["client", "server"],
+      "description": "Type of environment of this scope."
+    },
+    "loader": {
+      "enum": [
+        "babric",
+        "bta-babric",
+        "bukkit",
+        "bungeecord",
+        "canvas",
+        "datapack",
+        "fabric",
+        "folia",
+        "forge",
+        "iris",
+        "java-agent",
+        "legacy-fabric",
+        "liteloader",
+        "minecraft",
+        "modloader",
+        "neoforge",
+        "nilloader",
+        "optifine",
+        "ornite",
+        "paper",
+        "purpur",
+        "quilt",
+        "rift",
+        "spigot",
+        "sponge",
+        "vanilla",
+        "velocity",
+        "waterfall"
+      ],
+      "description": "Package loader used in this scope."
+    },
+    "gameVersion": {
+      "type": "string",
+      "description": "Game version supported by the loader in this scope."
+    }
+  },
+  "required": ["configVersion", "type", "environment", "loader", "gameVersion"],
+  "additionalProperties": false
+}
